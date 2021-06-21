@@ -31,6 +31,7 @@ class _AddTodoState extends State<AddTodo> {
               child: Column(
                 children: [
                   TextField(
+                    autofocus: true,
                     decoration: InputDecoration(labelText: 'Title'),
                     controller: _title,
                     keyboardType: TextInputType.text,
@@ -65,6 +66,7 @@ class _AddTodoState extends State<AddTodo> {
               }
             },
             icon: Icon(Icons.check),
+            textColor: Colors.white,
             label: widget.title == null ? Text('Save') : Text('Update'),
             elevation: 2,
             // materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
