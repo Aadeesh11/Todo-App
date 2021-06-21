@@ -15,6 +15,13 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   late FloatingSearchBarController _query;
   List<Todo> items = [];
+
+  @override
+  void didChangeDependencies() {
+    _query.query = '';
+    super.didChangeDependencies();
+  }
+
   @override
   void initState() {
     _query = FloatingSearchBarController();
@@ -29,9 +36,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var todos = Provider.of<TodoProvider>(context, listen: false);
+    var todos = Provider.of<TodoProvider>(context);
+    print('it was me');
     return Scaffold(
       body: FloatingSearchAppBar(
+          iconColor: Colors.amberAccent,
           alwaysOpened: true,
           color: Colors.indigo,
           titleStyle: TextStyle(color: Colors.white),

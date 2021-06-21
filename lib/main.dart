@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/providers/todoProvider.dart';
-import 'package:todo_app/screens/addTod0_screen.dart';
+import 'package:todo_app/screens/addTodo_screen.dart';
 import 'package:todo_app/screens/search_todo.dart';
 import 'package:todo_app/widgets/todo_item.dart';
 
