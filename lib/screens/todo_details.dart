@@ -45,7 +45,6 @@ class TodoDetails extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.delete),
                 onPressed: () {
-                  var flag = false;
                   showDialog(
                     context: context,
                     builder: (ctx) {

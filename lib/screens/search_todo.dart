@@ -41,6 +41,8 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       body: FloatingSearchAppBar(
           iconColor: Colors.amberAccent,
+          colorOnScroll: Colors.indigo,
+          liftOnScrollElevation: 10,
           alwaysOpened: true,
           color: Colors.indigo,
           titleStyle: TextStyle(color: Colors.white),
