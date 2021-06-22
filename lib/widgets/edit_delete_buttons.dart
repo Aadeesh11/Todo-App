@@ -22,6 +22,7 @@ class ActionButtons extends StatelessWidget {
                   title: todo.title,
                   id: todo.id,
                   date: todo.completebefore.toIso8601String(),
+                  desc: todo.desc,
                 ),
               ),
             );

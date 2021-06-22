@@ -52,7 +52,7 @@ class _SearchScreenState extends State<SearchScreen> {
             FloatingSearchBarAction.searchToClear(),
           ],
           elevation: 4,
-          debounceDelay: Duration(milliseconds: 300),
+          debounceDelay: Duration(milliseconds: 100),
           onQueryChanged: (query) {
             if (query.isEmpty) {
               setState(() {

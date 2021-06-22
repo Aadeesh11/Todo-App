@@ -9,7 +9,7 @@ class TodoDb {
       join(dbPath, 'todo.db'),
       onCreate: (db, version) {
         return db.execute(
-            'CREATE TABLE todo(id TEXT PRIMARY KEY, title TEXT, date TEXT)');
+            'CREATE TABLE todo(id TEXT PRIMARY KEY, title TEXT, date TEXT, desc TEXT)');
       },
       version: 1,
     );
