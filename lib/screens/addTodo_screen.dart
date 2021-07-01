@@ -1,15 +1,17 @@
-import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/providers/todoProvider.dart';
 
 class AddTodo extends StatefulWidget {
+  bool isLoading = false;
   final String? title;
   final String? id;
-  final String? date;
-  final String? desc;
-  AddTodo({Key? key, this.date, this.id, this.title, this.desc})
-      : super(key: key);
+
+  AddTodo({
+    Key? key,
+    this.id,
+    this.title,
+  }) : super(key: key);
 
   @override
   _AddTodoState createState() => _AddTodoState();
@@ -19,78 +21,95 @@ class _AddTodoState extends State<AddTodo> {
   @override
   Widget build(BuildContext context) {
     final _title = TextEditingController(text: widget.title ?? null);
-    final _date = TextEditingController(text: widget.date ?? null);
-    final _desc = TextEditingController(text: widget.desc ?? null);
     return Scaffold(
       appBar: AppBar(
         title:
             Text(widget.title == null ? 'Add a new TO-DO' : 'Edit your Todo'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+      body: !widget.isLoading
+          ? SingleChildScrollView(
+              child: Column(
+                children: [
+                  SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                      child: Column(
+                        children: [
+                          TextField(
+                            autofocus: true,
+                            decoration: InputDecoration(labelText: 'Title'),
+                            maxLength: 15,
+                            controller: _title,
+                            keyboardType: TextInputType.text,
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  RaisedButton.icon(
+                    onPressed: () async {
+                      if (_title.text.isEmpty ||
+                          _title.text.trimRight().length == 0) {
+                        return;
+                      } else {
+                        print("hora");
+                        setState(() {
+                          widget.isLoading = true;
+                        });
+                        final flag = await Provider.of<TodoProvider>(context,
+                                listen: false)
+                            .addTodo(
+                          _title.text,
+                          widget.id ?? null,
+                          widget.id == null ? false : true,
+                        );
+                        if (!flag!) {
+                          setState(() {
+                            widget.isLoading = false;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('No network'),
+                            ),
+                          );
+                        }
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    icon: Icon(Icons.check),
+                    textColor: Colors.white,
+                    label: widget.title == null ? Text('Save') : Text('Update'),
+                    elevation: 2,
+                    color: Theme.of(context).accentColor,
+                  ),
+                ],
+              ),
+            )
+          : Center(
+              child: Container(
                 child: Column(
+                  //mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextField(
-                      autofocus: true,
-                      decoration: InputDecoration(labelText: 'Title'),
-                      maxLength: 15,
-                      controller: _title,
-                      keyboardType: TextInputType.text,
+                    Center(
+                      child: Text(
+                        'Adding your Todo, Please wait',
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    TextField(
-                      decoration:
-                          InputDecoration(labelText: 'Description of the task'),
-                      controller: _desc,
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    DateTimePicker(
-                      decoration:
-                          InputDecoration(labelText: 'Complete task before'),
-                      controller: _date,
-                      type: DateTimePickerType.dateTime,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(2100),
+                    Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.deepOrange,
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
-            RaisedButton.icon(
-              onPressed: () {
-                if (_title.text.isEmpty ||
-                    _date.text.isEmpty ||
-                    _desc.text.isEmpty) {
-                  return;
-                } else {
-                  Provider.of<TodoProvider>(context, listen: false).addTodo(
-                      _title.text,
-                      DateTime.parse(_date.text),
-                      widget.id ?? DateTime.now().toIso8601String(),
-                      _desc.text.trimRight(),
-                      widget.id == null ? false : true);
-                  Navigator.of(context).pop();
-                }
-              },
-              icon: Icon(Icons.check),
-              textColor: Colors.white,
-              label: widget.title == null ? Text('Save') : Text('Update'),
-              elevation: 2,
-              color: Theme.of(context).accentColor,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

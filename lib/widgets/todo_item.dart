@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:todo_app/models/todo_item_model.dart';
-import 'package:todo_app/screens/todo_details.dart';
 import 'package:todo_app/widgets/edit_delete_buttons.dart';
 
 class TodoItem extends StatelessWidget {
@@ -13,14 +11,6 @@ class TodoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      enabled: true,
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (ctx) => TodoDetails(
-            todo: todos[i],
-          ),
-        ),
-      ),
       leading: CircleAvatar(
         backgroundColor: Colors.black,
         child: Center(
@@ -28,27 +18,6 @@ class TodoItem extends StatelessWidget {
         ),
       ),
       title: Text(todos[i].title.trimRight()),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Divider(),
-          Text(
-            DateFormat.yMEd().format(
-              todos[i].completebefore,
-            ),
-          ),
-          SizedBox(
-            height: 1,
-          ),
-          Text(
-            todos[i].completebefore.hour.toString().padLeft(2, '0') +
-                ':' +
-                todos[i].completebefore.minute.toString().padRight(2, '0'),
-          ),
-        ],
-      ),
       trailing: ActionButtons(
         todo: todos[i],
       ),

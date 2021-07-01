@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/db/todo_db.dart';
+import 'package:todo_app/http/auth_helper.dart';
+import 'package:todo_app/http/todo_crud_helper.dart';
 import 'package:todo_app/models/todo_item_model.dart';
 
 class TodoProvider extends ChangeNotifier {
@@ -9,43 +11,70 @@ class TodoProvider extends ChangeNotifier {
     return [..._items];
   }
 
-  Future<void> addTodo(String title, DateTime date, String id, String desc,
-      [bool update = false]) async {
-    if (!update) {
-      final newTodo =
-          Todo(id: id, title: title, completebefore: date, desc: desc);
-      _items.add(newTodo);
-    } else {
-      final i = _items.indexWhere((e) => e.id == id);
-      _items[i].title = title;
-      _items[i].completebefore = date;
-      _items[i].desc = desc;
+  Future<bool?> addTodo(String title, String? id, [bool update = false]) async {
+    try {
+      if (!update) {
+        print("hora");
+        final flag = await TodoCrud.addTodo('${AuthHelper.token()}', title);
+        if (flag!) {
+          final allTodo = await TodoCrud.getTodos('${AuthHelper.token()}');
+          final newTodo = allTodo!.last;
+          final newTo = Todo(
+            id: newTodo['id'].toString(),
+            title: newTodo['title'],
+          );
+          _items.add(newTo);
+          notifyListeners();
+          return true;
+        }
+      } else {
+        print("hora");
+        //Make an TodoCrud.update func
+        final i = _items.indexWhere((e) => e.id == id);
+        _items[i].title = title;
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      return false;
     }
-    notifyListeners();
-    TodoDb.insert('todo', {
-      'id': id,
-      'title': title,
-      'date': date.toIso8601String(),
-      'desc': desc
-    });
   }
 
-  Future<void> setTodo() async {
-    final allTodo = await TodoDb.getData('todo');
-    _items = allTodo.map((e) {
-      return Todo(
-        title: e['title'],
-        id: e['id'],
-        completebefore: DateTime.parse(e['date']),
-        desc: e['desc'],
-      );
-    }).toList();
-    notifyListeners();
+  Future<bool?> setTodo(String token) async {
+    //from where called agar token
+    final allTodo = await TodoCrud.getTodos(token);
+    if (allTodo!.length != 0) {
+      _items = allTodo.map(
+        (e) {
+          return Todo(
+            title: e['title'],
+            id: e['id'].toString(),
+          );
+        },
+      ).toList();
+      // print('wasmeok');
+      notifyListeners();
+      return true;
+    } else if (allTodo.length == 0) {
+      print('wasme');
+      return true;
+    } else {
+      print('WASME');
+      return false;
+    }
   }
 
-  Future<void> removeTodo(String id) async {
-    _items.removeWhere((e) => e.id == id);
-    notifyListeners();
-    TodoDb.remove(id);
+  Future<bool> removeTodo(String id) async {
+    try {
+      final flag = await TodoCrud.deleteTodo(id);
+      if (flag == false) {
+        return false;
+      }
+      _items.removeWhere((e) => e.id == id);
+      notifyListeners();
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
