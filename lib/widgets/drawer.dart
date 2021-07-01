@@ -20,23 +20,23 @@ class AppDrawer extends StatelessWidget {
       child: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            height: MediaQuery.of(context).orientation == Orientation.portrait
-                ? MediaQuery.of(context).size.height - 30
-                : 100,
+            height: MediaQuery.of(context).size.height - 30,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  height: 200,
+                  height:
+                      MediaQuery.of(context).orientation == Orientation.portrait
+                          ? 200
+                          : 50,
                   width: double.infinity,
                   child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.black,
-                    ),
                     child: Image.network(
                       'https://ui-avatars.com/api/?name=$first+$second',
-                      // fit: BoxFit.cover,
+                      fit: MediaQuery.of(context).orientation ==
+                              Orientation.portrait
+                          ? BoxFit.cover
+                          : null,
                       loadingBuilder:
                           (_, __, ImageChunkEvent? loadingProgress) {
                         if (loadingProgress == null) {
@@ -57,59 +57,45 @@ class AppDrawer extends StatelessWidget {
                 SizedBox(
                   height: 10,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        "Name: " + '${user!["name"]}',
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    child: Text(
+                      "Name: " + '${user!["name"]}',
+                      style: TextStyle(
+                        fontSize: 20,
                       ),
                     ),
-                  ],
+                  ),
                 ),
                 SizedBox(
                   height: 10,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Email: ${user!["email"]}',
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    child: Text(
+                      'Email: ${user!["email"]}',
+                      style: TextStyle(
+                        fontSize: 20,
                       ),
                     ),
-                  ],
+                  ),
                 ),
                 SizedBox(
                   height: 10,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'UserName: ${user!["username"]}',
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'UserName: ${user!["username"]}',
+                    style: TextStyle(
+                      fontSize: 20,
                     ),
-                  ],
+                  ),
                 ),
                 Expanded(
-                  child: Padding(
+                                  child: Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Container(
                       alignment: Alignment.bottomCenter,
@@ -119,8 +105,7 @@ class AppDrawer extends StatelessWidget {
                           Provider.of<TodoProvider>(context, listen: false)
                               .logoutreset();
                           Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(
-                                  builder: (ctx) => AuthScreen()));
+                              MaterialPageRoute(builder: (ctx) => AuthScreen()));
                         },
                         icon: Icon(Icons.logout),
                         label: Text(
