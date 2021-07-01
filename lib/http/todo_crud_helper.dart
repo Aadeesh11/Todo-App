@@ -19,19 +19,15 @@ class TodoCrud {
         },
       );
       if (response.statusCode == 200) {
-        print(response.body.toString() + 'wasme');
         return jsonDecode(response.body);
       }
     } catch (err) {
-      print(err.toString() + 'no');
-
       throw Exception('Please check your internet connection');
     }
   }
 
   static Future<bool?> addTodo(String token, String title) async {
     final url = getUri("todo/create/");
-    print('hora1');
     try {
       http.Response response = await http.post(
         url,
@@ -42,7 +38,6 @@ class TodoCrud {
           "title": title,
         },
       );
-      print('hora2');
       if (response.statusCode == 200) {
         return true;
       }
@@ -53,7 +48,7 @@ class TodoCrud {
 
   static Future<bool?> deleteTodo(String id) async {
     final url = getUri("todo/$id/");
-    print('hora1');
+
     try {
       http.Response response = await http.delete(
         url,
@@ -61,7 +56,7 @@ class TodoCrud {
           "Authorization": "Token ${AuthHelper.token()}",
         },
       );
-      print('hora2');
+
       if (response.statusCode == 204) {
         return true;
       }
@@ -72,14 +67,14 @@ class TodoCrud {
 
   static Future<bool?> editTodo(String id, String title) async {
     final url = getUri("todo/$id/");
-    print('hora1');
+
     try {
       http.Response response = await http.patch(url, headers: {
         "Authorization": "Token ${AuthHelper.token()}",
       }, body: {
         "title": title,
       });
-      print(response.statusCode.toString() + 'abcde');
+
       if (response.statusCode == 200) {
         return true;
       }

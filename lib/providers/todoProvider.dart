@@ -18,7 +18,6 @@ class TodoProvider extends ChangeNotifier {
   Future<bool?> addTodo(String title, String? id, [bool update = false]) async {
     try {
       if (!update) {
-        print("hora");
         final flag = await TodoCrud.addTodo('${AuthHelper.token()}', title);
         if (flag!) {
           final allTodo = await TodoCrud.getTodos('${AuthHelper.token()}');
@@ -32,7 +31,6 @@ class TodoProvider extends ChangeNotifier {
           return true;
         }
       } else {
-        print("hora");
         //Make an TodoCrud.update func
         final flag = await TodoCrud.editTodo(id!, title);
         if (flag!) {
@@ -61,14 +59,12 @@ class TodoProvider extends ChangeNotifier {
           );
         },
       ).toList();
-      // print('wasmeok');
+
       notifyListeners();
       return true;
     } else if (allTodo.length == 0) {
-      print('wasme');
       return true;
     } else {
-      print('WASME');
       return false;
     }
   }

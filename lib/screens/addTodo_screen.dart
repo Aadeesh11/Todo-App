@@ -55,7 +55,7 @@ class _AddTodoState extends State<AddTodo> {
                           _title.text.trimRight().length == 0) {
                         return;
                       } else {
-                        print("hora");
+                       
                         setState(() {
                           widget.isLoading = true;
                         });

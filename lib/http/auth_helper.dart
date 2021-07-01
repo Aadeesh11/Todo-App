@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:todo_app/providers/todoProvider.dart';
+
 
 String uri = "https://todo-app-csoc.herokuapp.com/";
 
@@ -44,15 +44,14 @@ class AuthHelper {
           "Authorization": "Token $_token",
         },
       );
-      print("MFS");
-      print(response.body + 'MFS');
+     
 
       _user["name"] = jsonDecode(response.body)["name"];
       _user["username"] = jsonDecode(response.body)["username"];
       _user["email"] = jsonDecode(response.body)["email"];
       return;
     } catch (e) {
-      print(e.toString() + 'MFS');
+      
       throw Exception('NetWork Error');
     }
   }
@@ -67,7 +66,7 @@ class AuthHelper {
         "password": password,
       },
     );
-    print(response.body + 'token');
+ 
     if (response.statusCode == 200) {
       _token = jsonDecode(response.body)["token"];
       await getProfile();
@@ -98,7 +97,7 @@ class AuthHelper {
       },
     );
     Map<String, dynamic> map = jsonDecode(response.body);
-    print(response.body + 'okme');
+   
     if (map.containsKey("token")) {
       _token = jsonDecode(response.body)["token"];
       _user = {

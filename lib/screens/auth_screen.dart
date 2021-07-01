@@ -165,7 +165,7 @@ class _AuthState extends State<Auth> {
       if (_authData['name'] == '' /*means we are loggin in */) {
         final token = await AuthHelper.login(
             _authData['username'] as String, _authData['password'] as String);
-        print("$token token");
+       
         if (token == 'Invalid') {
           showDialog(
             barrierDismissible: false,

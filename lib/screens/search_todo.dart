@@ -37,7 +37,6 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     var todos = Provider.of<TodoProvider>(context);
-    print('it was me');
     return Scaffold(
       body: FloatingSearchAppBar(
           iconColor: Colors.amberAccent,
