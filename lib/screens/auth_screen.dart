@@ -24,12 +24,13 @@ class _AuthScreenState extends State<AuthScreen> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Color.fromRGBO(215, 117, 255, 1).withOpacity(0.5),
-                  Color.fromRGBO(255, 188, 117, 1).withOpacity(0.9),
+                  Colors.tealAccent,
+                  Colors.indigo,
+                  Colors.deepOrange,
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                stops: [0, 1],
+                stops: [0.3, 0.6, 0.9],
               ),
             ),
           ),
@@ -42,13 +43,14 @@ class _AuthScreenState extends State<AuthScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Flexible(
+                    flex: 1,
                     child: Container(
                       margin: EdgeInsets.only(bottom: 20.0),
                       padding:
                           EdgeInsets.symmetric(vertical: 8.0, horizontal: 94.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
-                        color: Colors.deepOrange.shade900,
+                        color: Colors.black,
                         boxShadow: [
                           BoxShadow(
                             blurRadius: 8,
@@ -62,13 +64,15 @@ class _AuthScreenState extends State<AuthScreen> {
                         style: TextStyle(
                           // color: Theme.of(context).accentTextTheme.title.color,
                           fontSize: 45,
-                          fontWeight: FontWeight.normal,
+                          color: Colors.white,
+                          //fontWeight: FontWeight.,
                         ),
                       ),
                     ),
                   ),
                   Flexible(
-                    flex: deviceSize.width > 600 ? 2 : 1,
+                    // flex: deviceSize.width > 600 ? 2 : 1,
+                    flex: 3,
                     child: Auth(),
                   ),
                 ],
@@ -89,6 +93,13 @@ class Auth extends StatefulWidget {
 }
 
 class _AuthState extends State<Auth> {
+  var key;
+  @override
+  void initState() {
+    key = [UniqueKey(), UniqueKey(), UniqueKey(), UniqueKey(), UniqueKey()];
+    super.initState();
+  }
+
   Mode mode = Mode.Login;
   final GlobalKey<FormState> _formKey = GlobalKey();
   Map<String, String> _authData = {
@@ -157,6 +168,7 @@ class _AuthState extends State<Auth> {
         print("$token token");
         if (token == 'Invalid') {
           showDialog(
+            barrierDismissible: false,
             context: context,
             builder: (ctx) {
               return _showDialog('Invalid Credentials');
@@ -165,16 +177,16 @@ class _AuthState extends State<Auth> {
         } else {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (ctx) => TodoPage(token: token as String),
+              builder: (ctx) => TodoPage(),
             ),
           );
         }
       } else {
         final token = await AuthHelper.signUp(
-            email: _authData['email'] as String,
-            password: _authData['password'] as String,
-            username: _authData['username'] as String,
-            name: _authData['name'] as String);
+            email: _authData['email']!,
+            password: _authData['password']!,
+            username: _authData['username']!,
+            name: _authData['name']!);
         if (token == null) {
           showDialog(
             context: context,
@@ -185,6 +197,7 @@ class _AuthState extends State<Auth> {
           return;
         } else if (token.contains('(!)')) {
           showDialog(
+            barrierDismissible: false,
             context: context,
             builder: (ctx) {
               return _showDialog(
@@ -195,13 +208,14 @@ class _AuthState extends State<Auth> {
         } else {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (ctx) => TodoPage(token: token),
+              builder: (ctx) => TodoPage(),
             ),
           );
         }
       }
     } catch (e) {
       showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (ctx) {
           return _showDialog('Network error');
@@ -210,136 +224,147 @@ class _AuthState extends State<Auth> {
     }
   }
 
+  var signUp = false;
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      elevation: 8.1,
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 500),
-        curve: Curves.easeInOutCubic,
-        height: mode == Mode.Signup ? 500 : 300,
-        constraints: BoxConstraints(
-          minHeight: mode == Mode.Signup ? 500 : 300,
+    return AnimatedContainer(
+      onEnd: () {
+        signUp = !signUp;
+      },
+      height: mode == Mode.Signup ? 800 : 300,
+      duration: Duration(milliseconds: signUp ? 500 : 1000),
+      curve: signUp ? Curves.bounceOut : Curves.easeIn,
+      width: MediaQuery.of(context).size.width * 0.8,
+      child: Card(
+        margin: EdgeInsets.all(0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-        width: MediaQuery.of(context).size.width * 0.8,
-        padding: EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                if (mode == Mode.Signup)
-                  TextFormField(
-                    maxLength: 150,
-                    decoration: InputDecoration(
-                      labelText: 'Name',
+        elevation: 8.1,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 5, 20, 0),
+          child: Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (mode == Mode.Signup)
+                    TextFormField(
+                      key: key[0],
+                      maxLength: 150,
+                      decoration: InputDecoration(
+                        labelText: 'Name',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().length == 0) {
+                          return 'Name is too short';
+                        }
+                        return null;
+                      },
+                      onSaved: (val) {
+                        _authData['name'] = val as String;
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.trim().length == 0) {
-                        return 'Name is too short';
-                      }
-                      return null;
-                    },
-                    onSaved: (val) {
-                      _authData['name'] = val as String;
-                    },
-                  ),
-                if (mode == Mode.Signup)
+                  if (mode == Mode.Signup)
+                    TextFormField(
+                      key: key[1],
+                      maxLength: 255,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            !value.contains('@') ||
+                            value.trim().length == 0) {
+                          return 'Invalid email!';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _authData['email'] = value as String;
+                      },
+                    ),
                   TextFormField(
+                    key: key[2],
                     maxLength: 255,
                     decoration: InputDecoration(
-                      labelText: 'Email',
+                      labelText: 'Username',
                     ),
-                    keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value == null ||
                           value.isEmpty ||
-                          !value.contains('@') ||
                           value.trim().length == 0) {
-                        return 'Invalid email!';
+                        return 'username is too short';
                       }
                       return null;
                     },
                     onSaved: (value) {
-                      _authData['email'] = value as String;
+                      _authData['username'] = value as String;
                     },
                   ),
-                TextFormField(
-                  maxLength: 255,
-                  decoration: InputDecoration(
-                    labelText: 'Username',
-                  ),
-                  validator: (value) {
-                    if (value == null ||
-                        value.isEmpty ||
-                        value.trim().length == 0) {
-                      return 'username is too short';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _authData['username'] = value as String;
-                  },
-                ),
-                TextFormField(
-                  maxLength: 255,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                  ),
-                  controller: _passwordController,
-                  obscureText: true,
-                  validator: (value) {
-                    if (value!.isEmpty || value.length == 0) {
-                      return 'Password is too short!';
-                    }
-                    return null;
-                  },
-                  onSaved: (value) {
-                    _authData['password'] = value as String;
-                  },
-                ),
-                if (mode == Mode.Signup)
                   TextFormField(
+                    key: key[3],
                     maxLength: 255,
                     decoration: InputDecoration(
-                      labelText: 'Confirm Password',
+                      labelText: 'Password',
                     ),
+                    controller: _passwordController,
                     obscureText: true,
                     validator: (value) {
-                      if (value != _passwordController.text) {
-                        return 'Passwords dont match!';
+                      if (value!.isEmpty || value.length == 0) {
+                        return 'Password is too short!';
                       }
                       return null;
                     },
+                    onSaved: (value) {
+                      _authData['password'] = value as String;
+                    },
                   ),
-                SizedBox(
-                  height: 10,
-                ),
-                if (_isLoading)
-                  CircularProgressIndicator()
-                else
-                  RaisedButton(
-                    child: Text(mode == Mode.Login ? 'LOGIN' : 'SIGN UP'),
-                    onPressed: _submit,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                  if (mode == Mode.Signup)
+                    TextFormField(
+                      key: key[4],
+                      maxLength: 255,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm Password',
+                      ),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value != _passwordController.text) {
+                          return 'Passwords dont match!';
+                        }
+                        return null;
+                      },
                     ),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                    color: Theme.of(context).primaryColor,
+                  SizedBox(
+                    height: 10,
                   ),
-                FlatButton(
-                  child: Text(
-                      '${mode == Mode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
-                  onPressed: _switchAuthMode,
-                  padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  textColor: Colors.black,
-                ),
-              ],
+                  if (_isLoading)
+                    CircularProgressIndicator()
+                  else
+                    RaisedButton(
+                      child: Text(mode == Mode.Login ? 'LOGIN' : 'SIGN UP'),
+                      onPressed: _submit,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
+                      color: Colors.deepOrangeAccent,
+                      textColor: Colors.white,
+                    ),
+                  FlatButton(
+                    child: Text(
+                        '${mode == Mode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
+                    onPressed: _switchAuthMode,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    textColor: Colors.black,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

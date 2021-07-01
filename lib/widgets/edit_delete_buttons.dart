@@ -72,8 +72,7 @@ class _ActionButtonsState extends State<ActionButtons> {
                                   final flag = await Provider.of<TodoProvider>(
                                           context,
                                           listen: false)
-                                      .removeTodo(widget.todo.id!);
-
+                                      .removeTodo(widget.todo.id);
                                   setState(() {
                                     isLoading = false;
                                   });

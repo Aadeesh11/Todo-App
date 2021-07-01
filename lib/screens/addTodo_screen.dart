@@ -38,8 +38,8 @@ class _AddTodoState extends State<AddTodo> {
                           TextField(
                             autofocus: true,
                             decoration: InputDecoration(labelText: 'Title'),
-                            maxLength: 15,
                             controller: _title,
+                            maxLength: 100,
                             keyboardType: TextInputType.text,
                           ),
                           SizedBox(
@@ -62,7 +62,7 @@ class _AddTodoState extends State<AddTodo> {
                         final flag = await Provider.of<TodoProvider>(context,
                                 listen: false)
                             .addTodo(
-                          _title.text,
+                          _title.text.trimRight(),
                           widget.id ?? null,
                           widget.id == null ? false : true,
                         );
@@ -91,19 +91,27 @@ class _AddTodoState extends State<AddTodo> {
           : Center(
               child: Container(
                 child: Column(
-                  //mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Center(
                       child: Text(
-                        'Adding your Todo, Please wait',
+                        widget.id != null
+                            ? 'Updating your Todo, please wait'
+                            : 'Adding your Todo, Please wait',
                         textAlign: TextAlign.center,
                       ),
                     ),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.deepOrange,
+                      child: LimitedBox(
+                        maxHeight: 50,
+                        maxWidth: 50,
+                        child: CircularProgressIndicator(
+                          color: Colors.deepOrange,
+                        ),
                       ),
                     ),
                   ],

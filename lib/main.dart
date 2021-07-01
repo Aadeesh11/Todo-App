@@ -1,9 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/http/auth_helper.dart';
 import 'package:todo_app/providers/todoProvider.dart';
 import 'package:todo_app/screens/addTodo_screen.dart';
 import 'package:todo_app/screens/auth_screen.dart';
 import 'package:todo_app/screens/search_todo.dart';
+import 'package:todo_app/widgets/drawer.dart';
 import 'package:todo_app/widgets/todo_item.dart';
 
 void main() {
@@ -28,12 +31,14 @@ class MyApp extends StatelessWidget {
 }
 
 class TodoPage extends StatelessWidget {
-  final String token;
-  TodoPage({Key? key, required this.token}) : super(key: key);
+  TodoPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: AppDrawer(
+        user: AuthHelper.user(),
+      ),
       appBar: AppBar(
         actions: [
           IconButton(
@@ -49,8 +54,8 @@ class TodoPage extends StatelessWidget {
         title: Text("Your todo list"),
       ),
       body: FutureBuilder(
-        future:
-            Provider.of<TodoProvider>(context, listen: false).setTodo("$token"),
+        future: Provider.of<TodoProvider>(context, listen: false)
+            .setTodo("${AuthHelper.token()}"),
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -66,13 +71,21 @@ class TodoPage extends StatelessWidget {
                     ? child!
                     : Padding(
                         padding: const EdgeInsets.fromLTRB(4, 5, 4, 60),
-                        child: ListView.separated(
-                          separatorBuilder: (ctx, i) => Divider(
-                            thickness: 2,
+                        child: CupertinoScrollbar(
+                          isAlwaysShown: true,
+                          thickness: 3,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: ListView.separated(
+                              physics: BouncingScrollPhysics(),
+                              separatorBuilder: (ctx, i) => Divider(
+                                thickness: 2,
+                              ),
+                              itemBuilder: (ctx, i) =>
+                                  TodoItem(todos: todos.items, i: i),
+                              itemCount: todos.items.length,
+                            ),
                           ),
-                          itemBuilder: (ctx, i) =>
-                              TodoItem(todos: todos.items, i: i),
-                          itemCount: todos.items.length,
                         ),
                       ),
               );

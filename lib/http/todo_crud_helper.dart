@@ -69,4 +69,22 @@ class TodoCrud {
       throw Exception('Please check your internet connection');
     }
   }
+
+  static Future<bool?> editTodo(String id, String title) async {
+    final url = getUri("todo/$id/");
+    print('hora1');
+    try {
+      http.Response response = await http.patch(url, headers: {
+        "Authorization": "Token ${AuthHelper.token()}",
+      }, body: {
+        "title": title,
+      });
+      print(response.statusCode.toString() + 'abcde');
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (err) {
+      throw Exception('Please check your internet connection');
+    }
+  }
 }

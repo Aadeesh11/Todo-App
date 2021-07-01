@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/db/todo_db.dart';
 import 'package:todo_app/http/auth_helper.dart';
 import 'package:todo_app/http/todo_crud_helper.dart';
 import 'package:todo_app/models/todo_item_model.dart';
@@ -9,6 +8,11 @@ class TodoProvider extends ChangeNotifier {
 
   List<Todo> get items {
     return [..._items];
+  }
+
+  void logoutreset() {
+    _items = [];
+    notifyListeners();
   }
 
   Future<bool?> addTodo(String title, String? id, [bool update = false]) async {
@@ -30,10 +34,15 @@ class TodoProvider extends ChangeNotifier {
       } else {
         print("hora");
         //Make an TodoCrud.update func
-        final i = _items.indexWhere((e) => e.id == id);
-        _items[i].title = title;
-        notifyListeners();
-        return true;
+        final flag = await TodoCrud.editTodo(id!, title);
+        if (flag!) {
+          final i = _items.indexWhere((e) => e.id == id);
+          _items[i].title = title;
+          notifyListeners();
+          return true;
+        } else {
+          return false;
+        }
       }
     } catch (e) {
       return false;

@@ -1,8 +1,8 @@
 class Todo {
-  String? id;
+  String id;
   String title;
   Todo({
-    this.id,
+    required this.id,
     required this.title,
   });
 }
